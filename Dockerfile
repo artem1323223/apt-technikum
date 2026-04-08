@@ -19,5 +19,9 @@ RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
 # Создаем директории для загрузок
 RUN mkdir -p /var/www/html/uploads/students /var/www/html/uploads/teachers && chmod -R 777 /var/www/html/uploads
 
-# Запускаем Nginx и PHP-FPM
+# Удаляем стандартный конфиг Nginx
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+EXPOSE 9000
+
 CMD service nginx start && php-fpm
