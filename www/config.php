@@ -3,13 +3,13 @@ session_start();
 
 $db_host = getenv('MYSQLHOST') ?: 'mysql.railway.internal';
 $db_port = getenv('MYSQLPORT') ?: '3306';
-$db_name = getenv('MYSQLDATABASE') ?: 'railway';
+$db_name = getenv('MYSQL_DATABASE') ?: 'railway';  // Используем MYSQL_DATABASE
 $db_user = getenv('MYSQLUSER') ?: 'root';
 $db_password = getenv('MYSQLPASSWORD') ?: '';
 
 define('DB_HOST', $db_host);
 define('DB_PORT', $db_port);
-define('DB_NAME', $db_name);
+define('DB_NAME', $db_name);  // Это важно!
 define('DB_USER', $db_user);
 define('DB_PASSWORD', $db_password);
 define('SITE_NAME', 'АПТ Техникум');
