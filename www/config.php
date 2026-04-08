@@ -1,16 +1,29 @@
 <?php
 session_start();
 
-// Настройки базы данных
-define('DB_HOST', 'mysql');
-define('DB_NAME', 'apt_db');
-define('DB_USER', 'apt_user');
-define('DB_PASSWORD', 'apt123');
+// Настройки базы данных (для Railway используем переменные окружения)
+$db_host = getenv('MYSQLHOST') ?: 'mysql.railway.internal';
+$db_port = getenv('MYSQLPORT') ?: '3306';
+$db_name = getenv('MYSQLDATABASE') ?: 'railway';
+$db_user = getenv('MYSQLUSER') ?: 'root';
+$db_password = getenv('MYSQLPASSWORD') ?: getenv('MYSQL_ROOT_PASSWORD') ?: '';
 
-// Настройки сайта
+// Для локальной разработки
+if (empty($db_password)) {
+    $db_host = 'mysql';
+    $db_name = 'apt_db';
+    $db_user = 'apt_user';
+    $db_password = 'apt123';
+}
+
+define('DB_HOST', $db_host);
+define('DB_PORT', $db_port);
+define('DB_NAME', $db_name);
+define('DB_USER', $db_user);
+define('DB_PASSWORD', $db_password);
 define('SITE_NAME', 'АПТ Техникум');
-define('SITE_URL', 'http://localhost:8080');
-define('UPLOAD_DIR', __DIR__ . '/uploads/avatars/');
+define('SITE_URL', getenv('RAILWAY_PUBLIC_DOMAIN') ? 'https://' . getenv('RAILWAY_PUBLIC_DOMAIN') : 'http://localhost:8080');
+define('UPLOAD_DIR', __DIR__ . '/uploads/');
 
 // Установка кодировки
 header('Content-Type: text/html; charset=utf-8');
@@ -22,16 +35,12 @@ function getDBConnection() {
     
     if ($pdo === null) {
         try {
-            $pdo = new PDO(
-                "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
-                DB_USER,
-                DB_PASSWORD,
-                array(
-                    PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci",
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-                )
-            );
+            $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+            $pdo = new PDO($dsn, DB_USER, DB_PASSWORD, array(
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ));
+            $pdo->exec("SET NAMES utf8mb4");
         } catch(PDOException $e) {
             die("Ошибка подключения к базе данных: " . $e->getMessage());
         }
