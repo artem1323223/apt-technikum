@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Настройки для Railway
 $db_host = getenv('MYSQLHOST') ?: 'mysql.railway.internal';
 $db_port = getenv('MYSQLPORT') ?: '3306';
 $db_name = getenv('MYSQLDATABASE') ?: 'railway';
@@ -14,10 +13,8 @@ define('DB_NAME', $db_name);
 define('DB_USER', $db_user);
 define('DB_PASSWORD', $db_password);
 define('SITE_NAME', 'АПТ Техникум');
-define('SITE_URL', 'https://' . ($_SERVER['HTTP_HOST'] ?? 'localhost'));
 
 header('Content-Type: text/html; charset=utf-8');
-mb_internal_encoding('UTF-8');
 
 function getDBConnection() {
     static $pdo = null;
@@ -31,7 +28,7 @@ function getDBConnection() {
             ]);
             $pdo->exec("SET NAMES utf8mb4");
         } catch(PDOException $e) {
-            die("Ошибка подключения к базе данных: " . $e->getMessage());
+            die("Ошибка БД: " . $e->getMessage());
         }
     }
     return $pdo;
@@ -43,7 +40,6 @@ function isLoggedIn() {
 
 function getCurrentUser() {
     if (!isLoggedIn()) return null;
-    
     $pdo = getDBConnection();
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
