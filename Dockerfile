@@ -13,14 +13,15 @@ COPY . /var/www/html
 COPY nginx/default.conf /etc/nginx/sites-available/default
 RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
+# Настройка PHP-FPM для использования сокета
+RUN sed -i 's/listen = 9000/listen = \/var\/run\/php\/php8.2-fpm.sock/' /usr/local/etc/php-fpm.d/zz-docker.conf || true
+RUN mkdir -p /var/run/php && chown -R www-data:www-data /var/run/php
+
 # Настройка прав
 RUN chown -R www-data:www-data /var/www/html && chmod -R 755 /var/www/html
 
 # Создаем директории для загрузок
 RUN mkdir -p /var/www/html/uploads/students /var/www/html/uploads/teachers && chmod -R 777 /var/www/html/uploads
-
-# Удаляем стандартный конфиг Nginx
-RUN rm -f /etc/nginx/conf.d/default.conf
 
 EXPOSE 9000
 
