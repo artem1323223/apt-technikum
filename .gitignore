@@ -1,0 +1,9 @@
+.env
+.env.local
+.railway/
+uploads/students/*
+uploads/teachers/*
+!uploads/students/.gitkeep
+!uploads/teachers/.gitkeep
+*.log
+*.tar.gz
